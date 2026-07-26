@@ -48,17 +48,6 @@ an AUROC of 0.64 (0.52–0.75) — modest, and discussed as such in the paper.
 
 ## Pipeline
 
-```mermaid
-flowchart TD
-    A[(MIMIC-IV<br/>PostgreSQL)] --> B[1 · cohort + pre-HFNO extraction]
-    A --> C[1b · 4/12/24 h on-HFNO windows]
-    B --> D[2 · filtering, collinearity,<br/>imputation, Table 1]
-    C --> D
-    D --> E[3 · models, AUROC,<br/>SHAP, flow-rate analysis]
-    D --> F[4 · sepsis-3 decomposition]
-    G[(Dutch Data<br/>Warehouse)] --> E
-```
-
 | Notebook | What it does |
 | --- | --- |
 | `1_MIMICIV_HFNO_data_extraction.ipynb` | Builds the cohort, extracts pre-initiation variables |
