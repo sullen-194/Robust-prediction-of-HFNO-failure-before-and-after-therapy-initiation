@@ -1,0 +1,13 @@
+numpy
+pandas
+matplotlib
+seaborn
+scipy
+scikit-learn
+xgboost
+shap
+lifelines
+tableone
+tqdm
+psycopg2-binary
+ipykernel

@@ -1,0 +1,272 @@
+# Define meaningful separations of dataset features to allow for easy selection of features for training and testin
+dataset_features = {
+    "base_features": [
+        "stay_id",
+        "admission_age",
+        "gender",
+        "race",
+        "weight_admit",
+        "bmi",
+        "apsiii",
+        "gcs_min",
+        "dialysis_active",
+        "intubated",
+        "died",
+        "hfno_failure",
+        "inhosp_mortality",
+        # "vp_last24h",
+        # "vp_last12h",
+        "vp_last6h"
+    ],
+    "timestamp_features": [
+        "deathtime",
+        "iv_time",
+        "final_starttime",
+        "final_endtime",
+        "admittime"
+    ],
+    "settings": [
+        'max_flow_rate',
+    ],
+    "comorbidities": [
+        "sepsis3",
+        "myocardial_infarct",
+        "congestive_heart_failure",
+        "peripheral_vascular_disease",
+        "cerebrovascular_disease",
+        "chronic_pulmonary_disease",
+        "liver_disease",
+        "renal_disease",
+        "malignant_cancer",
+        "diabetes"
+    ],
+    "sepsis3_components": [
+        "s3_antibiotic_time",
+        "s3_sofa_time",
+        "s3_sofa_score",
+        "s3_respiration",
+        "s3_coagulation",
+        "s3_liver",
+        "s3_cardiovascular",
+        "s3_cns",
+        "s3_renal",
+        "sofa_respiration",
+        "sofa_coagulation",
+        "sofa_liver",
+        "sofa_cardiovascular",
+        "sofa_cns",
+        "sofa_renal"
+    ],
+    "vitals_mean": [
+        "heart_rate_mean",
+        "sbp_mean",
+        "dbp_mean",
+        "mbp_mean",
+        "resp_rate_mean",
+        "temperature_mean",
+        "spo2_mean",
+        "glucose_mean",
+        # "urineoutput",
+    ],
+    "vitals_mean_last24h": [
+        "heart_rate_mean_last24h",
+        "sbp_mean_last24h",
+        "dbp_mean_last24h",
+        "mbp_mean_last24h",
+        "resp_rate_mean_last24h",
+        "temperature_mean_last24h",
+        "spo2_mean_last24h",
+        "glucose_mean_last24h",
+        # "urineoutput_24hr",
+        "fluidbalance_24hr"
+    ],
+    "vitals_last": [
+        "heart_rate_last",
+        "sbp_last",
+        "dbp_last",
+        "mbp_last",
+        "resp_rate_last",
+        "temperature_last",
+        "spo2_last",
+        "glucose_vital_last",
+        # "urineoutput_24hr"
+        "fluidbalance_24hr"
+    ],
+    "first": [
+        "wbc_first",
+        "hematocrit_first",
+        "hemoglobin_first",
+        "platelet_first",
+        "mch_first",
+        "mchc_first",
+        "mcv_first",
+        "rbc_first",
+        "rdw_first",
+        "aniongap_first",
+        "bicarbonate_first",
+        "bun_first",
+        "calcium_first",
+        "chloride_first",
+        "creatinine_first",
+        "glucose_first",
+        "sodium_first",
+        "potassium_first",
+        "albumin_first",
+        "neutrophils_first",
+        "lymphocytes_first",
+        "basophils_first",
+        "eosinophils_first",
+        "monocytes_first",
+        "bands_first",
+        "inr_first",
+        "ptt_first",
+        "ast_first",
+        "alt_first",
+        "alp_first",
+        "ld_ldh_first",
+        "bilirubin_total_first",
+        "lactate_first",
+        "ph_first",
+        "so2_first",
+        "po2_first",
+        "pco2_first",
+        "baseexcess_first",
+        "totalco2_first",
+    ],
+    "last": [
+        "lactate_last",
+        "ph_last",
+        "so2_last",
+        "po2_last",
+        "pco2_last",
+        "baseexcess_last",
+        "totalco2_last",
+        "wbc_last",
+        "hematocrit_last",
+        "hemoglobin_last",
+        "platelet_last",
+        "mch_last",
+        "mchc_last",
+        "mcv_last",
+        "rbc_last",
+        "rdw_last",
+        "aniongap_last",
+        "bicarbonate_last",
+        "bun_last",
+        "calcium_last",
+        "chloride_last",
+        "creatinine_last",
+        "glucose_last",
+        "sodium_last",
+        "potassium_last",
+        "albumin_last",
+        "neutrophils_last",
+        "lymphocytes_last",
+        "basophils_last",
+        "eosinophils_last",
+        "monocytes_last",
+        "bands_last",
+        "inr_last",
+        "ptt_last",
+        "ast_last",
+        "alt_last",
+        "alp_last",
+        "ld_ldh_last",
+        "bilirubin_total_last"
+    ]
+}
+
+# Predefined dataset configurations:
+FIRSTDATA_FEATURES = {
+    "all": dataset_features["base_features"] + dataset_features["comorbidities"] + dataset_features["vitals_mean"] + dataset_features["first"] + dataset_features['settings'],
+    "base_features": dataset_features["base_features"],
+    "comorbidities": dataset_features["comorbidities"],
+    "vitals": dataset_features["vitals_mean"],
+    "bg_and_lab": dataset_features["first"],
+    "settings": dataset_features['settings']
+}
+
+LASTDATA_FEATURES = {
+    "all": dataset_features["base_features"] + dataset_features["comorbidities"] + dataset_features["vitals_mean_last24h"] + dataset_features["last"] + dataset_features['settings'],
+    "base_features": dataset_features["base_features"],
+    "comorbidities": dataset_features["comorbidities"],
+    "vitals": dataset_features["vitals_mean_last24h"],
+    "bg_and_lab": dataset_features["last"],
+    "settings": dataset_features['settings']
+}
+
+# Post-HFNO initiation timeframe feature groups (0 to X hours after final_starttime)
+POST_TIMEFRAMES = [4, 12, 24]
+
+for _h in POST_TIMEFRAMES:
+    dataset_features[f"vitals_mean_post{_h}h"] = [
+        f"heart_rate_mean_post{_h}h",
+        f"sbp_mean_post{_h}h",
+        f"dbp_mean_post{_h}h",
+        f"mbp_mean_post{_h}h",
+        f"resp_rate_mean_post{_h}h",
+        f"temperature_mean_post{_h}h",
+        f"spo2_mean_post{_h}h",
+        f"glucose_mean_post{_h}h",
+        f"fluidbalance_post{_h}h",
+    ]
+    dataset_features[f"last_post{_h}h"] = [
+        f"lactate_last_post{_h}h",
+        f"ph_last_post{_h}h",
+        f"so2_last_post{_h}h",
+        f"po2_last_post{_h}h",
+        f"pco2_last_post{_h}h",
+        f"baseexcess_last_post{_h}h",
+        f"totalco2_last_post{_h}h",
+        f"wbc_last_post{_h}h",
+        f"hematocrit_last_post{_h}h",
+        f"hemoglobin_last_post{_h}h",
+        f"platelet_last_post{_h}h",
+        f"mch_last_post{_h}h",
+        f"mchc_last_post{_h}h",
+        f"mcv_last_post{_h}h",
+        f"rbc_last_post{_h}h",
+        f"rdw_last_post{_h}h",
+        f"aniongap_last_post{_h}h",
+        f"bicarbonate_last_post{_h}h",
+        f"bun_last_post{_h}h",
+        f"calcium_last_post{_h}h",
+        f"chloride_last_post{_h}h",
+        f"creatinine_last_post{_h}h",
+        f"glucose_last_post{_h}h",
+        f"sodium_last_post{_h}h",
+        f"potassium_last_post{_h}h",
+        f"albumin_last_post{_h}h",
+        f"neutrophils_last_post{_h}h",
+        f"lymphocytes_last_post{_h}h",
+        f"basophils_last_post{_h}h",
+        f"eosinophils_last_post{_h}h",
+        f"monocytes_last_post{_h}h",
+        f"bands_last_post{_h}h",
+        f"inr_last_post{_h}h",
+        f"ptt_last_post{_h}h",
+        f"ast_last_post{_h}h",
+        f"alt_last_post{_h}h",
+        f"alp_last_post{_h}h",
+        f"ld_ldh_last_post{_h}h",
+        f"bilirubin_total_last_post{_h}h",
+    ]
+
+# Post-initiation only dataset configurations (base + comorbidities + post-window vitals/labs):
+POSTDATA_FEATURES = {
+    f"{h}h": {
+        "all": (
+            dataset_features["base_features"]
+            + dataset_features["comorbidities"]
+            + dataset_features[f"vitals_mean_post{h}h"]
+            + dataset_features[f"last_post{h}h"]
+            + dataset_features["settings"]
+        ),
+        "base_features": dataset_features["base_features"],
+        "comorbidities": dataset_features["comorbidities"],
+        "vitals": dataset_features[f"vitals_mean_post{h}h"],
+        "bg_and_lab": dataset_features[f"last_post{h}h"],
+        "settings": dataset_features["settings"],
+    }
+    for h in POST_TIMEFRAMES
+}

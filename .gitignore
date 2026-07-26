@@ -1,0 +1,30 @@
+# Environments
+hfno_venv/
+.venv/
+venv/
+
+# Data and outputs — MIMIC-IV and the Dutch Data Warehouse are credentialed
+# datasets. Patient-level extracts must never be committed (PhysioNet DUA).
+filtered_data/
+processed_data/
+results/
+*.npy
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+*-checkpoint.ipynb
+
+# Editors / tooling
+.vscode/
+.idea/
+.claude/
+
+# OS
+desktop.ini
+.DS_Store
+Thumbs.db
