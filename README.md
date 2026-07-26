@@ -8,7 +8,7 @@
 Most tools for predicting high-flow nasal oxygen (HFNO) failure wait until the
 therapy is already running, then watch how the patient responds - the ROX index
 and its descendants. This study asked a different question: **how much can you
-know before you ever switch the machine on?**
+know before you ever switch the HFNO on?**
 
 Across 1,609 ICU patients in MIMIC-IV a model
 using only pre-initiation data matched the best models that had 24 hours of
