@@ -2,9 +2,11 @@
 EXCLUDE_DNI = True
 
 
+""" MODEL EVALUATION """
+N_CI_BOOTSTRAP = 2000
+
+
 """ DATA PROCESSING """
-# Variables that are not normally distributed based on normality tests and manual inspection.
-# Normality test used: scipy.stats.normaltest (2-sided chi squared probability for the hypothesis test).
 CLEAR_NON_NORMAL_VARS = [
     'bun_last',
     'creatinine_last',
@@ -22,7 +24,6 @@ CLEAR_NON_NORMAL_VARS = [
     'platelet_last'
 ]
 
-# Variables that are likely not normally distributed.
 SEMI_NORMAL_VARS = [
     'temperature_mean_last_24h',
     'apsiii', 
@@ -69,11 +70,6 @@ FORMAT_PARAMS = {
         'vp_last12h': 1,
         'vp_last6h': 1,
     },
-    # Levels must be quoted: tableone casts categorical levels to str before
-    # matching. With ints ([1, 0]) the lookup fails, tableone warns "Order value
-    # not found" and falls back to sorted order, so every binary variable is
-    # reported at level 0 (characteristic ABSENT) under a label that reads as if
-    # it were present.
     'order': {
         'inhosp_mortality': ['1', '0'],
         'gender': ['1', '0'],
@@ -134,7 +130,7 @@ FORMAT_PARAMS = {
         # 'bicarbonate_last': 'Bicarbonate',
         'po2_last': 'pO2',
         'pco2_last': 'pCO2',
-        'spo2_last': 'SpO2',
+        'spo2_last': 'SpO2 (last before HFNO)',
         'ptt_last': 'PTT',
         'inr_last': 'INR',
         'calcium_last': 'Calcium',
@@ -150,9 +146,10 @@ FORMAT_PARAMS = {
         'creatinine_last': 'Creatinine',
 
         # Settings
-        'flow_rate_last': 'Flow rate',
-        'fio2_last': 'FiO2',
-        'rox_last': 'ROX',
+        # Recorded within the first 2 h of HFNO (descriptive only, not model features)
+        'flow_rate_2h': 'Flow rate (first 2 h of HFNO)',
+        'fio2_2h': 'FiO2 (first 2 h of HFNO)',
+        'rox_2h': 'ROX index (2 h after HFNO initiation)',
 
         # Secondary outcomes
         'inhosp_mortality': 'In-hospital mortality',

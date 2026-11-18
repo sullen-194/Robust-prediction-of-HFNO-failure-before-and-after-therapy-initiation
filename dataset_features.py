@@ -1,4 +1,3 @@
-# Define meaningful separations of dataset features to allow for easy selection of features for training and testin
 dataset_features = {
     "base_features": [
         "stay_id",

@@ -72,13 +72,62 @@ def fit_and_eval_model(X_train, y_train, X_test, y_test, model, model_label='', 
 
 
 def print_mc_results(results, n_iter):
-    print(f"Monte-Carlo bootstrapping results (#iterations:{n_iter}):")
+    # Spread of each metric across refits on resampled TRAINING data, all scored on the same
+    # test set. That is fit stability, not the sampling uncertainty of the estimate: the test set
+    # is never resampled, so it contributes nothing. With n_iter small the width is also barely
+    # reproducible (it moves by a factor of ~2 across seeds), so it is not reported as an
+    # interval. The intervals for Table 2 come from test_set_ci().
+    print(f"Training-resample spread (#refits:{n_iter}) - fit stability, NOT a confidence interval:")
     for key, scores in results.items():
 
         mean = np.mean(scores)
         std = np.std(scores)
-        result_string = f"{key}: {mean} ({mean - 1.96 * std}--{mean + 1.96 * std})"
+        result_string = f"{key}: {mean} (SD {std:.4f}; range {np.min(scores):.4f}-{np.max(scores):.4f})"
         print(result_string)
+
+
+def test_set_ci(y_true, y_probs, preds=None, n_boot=N_CI_BOOTSTRAP, seed=42, alpha=0.05):
+    """Percentile bootstrap confidence intervals over the TEST patients.
+
+    The test set is the dominant source of uncertainty in the AUROC here (a few hundred patients,
+    a few dozen events), so it is what has to be resampled. Resampling is stratified by outcome,
+    which holds the event count fixed and keeps every resample evaluable - an unstratified
+    resample can contain a single class, leaving the AUROC undefined.
+
+    No refitting, so n_boot can be large. Returns {metric: (point, ci_low, ci_high)}.
+    """
+    y_true = np.asarray(y_true)
+    p = np.asarray(y_probs)
+    p = p[:, 1] if p.ndim == 2 else p
+    if preds is None:
+        preds = (p >= 0.5).astype(int)
+    preds = np.asarray(preds)
+
+    pos, neg = np.where(y_true == 1)[0], np.where(y_true == 0)[0]
+    rng = np.random.default_rng(seed)
+    boots = {'auroc': [], 'sens': [], 'spec': [], 'acc': []}
+    for _ in range(n_boot):
+        idx = np.concatenate([rng.choice(pos, len(pos), replace=True),
+                              rng.choice(neg, len(neg), replace=True)])
+        yt, pp, yp = y_true[idx], p[idx], preds[idx]
+        boots['auroc'].append(metrics.roc_auc_score(yt, pp))
+        tp = np.sum((yp == 1) & (yt == 1)); fn = np.sum((yp == 0) & (yt == 1))
+        tn = np.sum((yp == 0) & (yt == 0)); fp = np.sum((yp == 1) & (yt == 0))
+        boots['sens'].append(tp / (tp + fn) if tp + fn else np.nan)
+        boots['spec'].append(tn / (tn + fp) if tn + fp else np.nan)
+        boots['acc'].append((tp + tn) / len(yt))
+
+    point = {
+        'auroc': metrics.roc_auc_score(y_true, p),
+        'sens': np.sum((preds == 1) & (y_true == 1)) / max(np.sum(y_true == 1), 1),
+        'spec': np.sum((preds == 0) & (y_true == 0)) / max(np.sum(y_true == 0), 1),
+        'acc': np.mean(preds == y_true),
+    }
+    out = {}
+    for k, v in boots.items():
+        lo, hi = np.nanpercentile(v, [100 * alpha / 2, 100 * (1 - alpha / 2)])
+        out[k] = (float(point[k]), float(lo), float(hi))
+    return out
 
 
 def mc_bootstrap(X_train, y_train, X_test, y_test, model, model_label='', n_iter=10, eval_set=None, verbose=False):
@@ -117,6 +166,15 @@ def mc_bootstrap(X_train, y_train, X_test, y_test, model, model_label='', n_iter
     print(f"Specificity: {spec}")
     print(f"PPV: {ppv}")
     print(f"NPV: {npv}\n")
+
+    # Intervals for the manuscript: bootstrap over the test patients of this final model.
+    ci = test_set_ci(y_test, model.predict_proba(X_test), preds)
+    print(f"Test-set bootstrap 95% CI (#resamples:{N_CI_BOOTSTRAP}, n={len(y_test)}, "
+          f"events={int(np.sum(y_test))}):")
+    for k, (pt, lo, hi) in ci.items():
+        print(f"{k}: {pt:.3f} ({lo:.3f}-{hi:.3f})")
+    print()
+    results['ci'] = ci
 
     return model, preds, results
 
