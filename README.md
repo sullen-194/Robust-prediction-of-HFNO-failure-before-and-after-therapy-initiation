@@ -39,8 +39,6 @@ produced by earlier steps.
 | `6_manuscript_exports.ipynb` | Rebuilds every manuscript figure and table | no |
 | `7_export_model_for_ddw.ipynb` | Exports trained models (no patient rows) for the DDW | no |
 
-`v2_1_cohort.ipynb` and `v2_2_features.ipynb` are earlier exploratory versions, kept for
-provenance; they are not part of the pipeline.
 
 ### Database connection
 
@@ -64,27 +62,7 @@ All five include demographics, comorbidities and admission severity scores.
 | 5 | 24 h pre-HFNO only | 49 |
 
 Each model using on-therapy data is applied only to patients still receiving HFNO at the end
-of its window, so the test sets differ between models (reported in Table 2).
-
-**Note on numbering.** Inside notebook 3 the scenarios are `s1`–`s5` in the order they were
-developed, which is *not* the manuscript order: `s1` is Model 5 (pre-HFNO only) and `s2` is
-Model 1. The mapping lives in one place, `PAPER_ORDER = [2, 3, 4, 5, 1]`, and
-`Table2_model_performance.csv` is written in manuscript numbering. Notebook 6 asserts that the
-variable counts in that CSV match `model_feature_counts.json`, which fails loudly if the two
-numberings ever drift apart.
-
-## Reproducibility
-
-Every train/test split and estimator uses `random_state=42`, and the confidence intervals in
-Table 2 come from `utils.test_set_ci` (stratified percentile bootstrap over the test patients,
-`N_CI_BOOTSTRAP=2000`, `seed=42`). Re-running notebook 3 reproduces
-`Table2_model_performance.csv`, `Model_comparisons_DeLong.csv` and `TableS_ROX_benchmark.csv`
-exactly.
-
-`utils.mc_bootstrap` additionally refits each model on 10 resampled training sets to show the
-spread attributable to training data. That loop draws with an **unseeded** RNG, so those
-numbers vary between runs — they are a diagnostic only, and nothing reported in the manuscript
-derives from them.
+of its window, so the test sets differ between models.
 
 ## Citation
 
